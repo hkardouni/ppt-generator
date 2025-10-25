@@ -1,14 +1,20 @@
 import { Button } from '@/components/ui/button'
 import { useUser } from '@clerk/clerk-react'
-import { Link, Outlet } from 'react-router-dom'
+import { Link, Outlet, useLocation } from 'react-router-dom'
 import { firebaseDb } from '../../config/FirebaseConfig'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { useContext, useEffect } from 'react'
 import { UserDetailContext } from '../../context/UserDetailContext'
+import Header from '@/components/custom/Header'
+import PromptBox from '@/components/custom/PromptBox'
+import MyProjects from '@/components/custom/MyProjects'
 const Workspace = () => {
 
   const { user, isLoaded } = useUser()
   const { userDetail, setUserDetail } = useContext(UserDetailContext)
+
+  const location = useLocation()
+
   useEffect(() => {
     CreateNewUser()
   }, [user])
@@ -29,7 +35,7 @@ const Workspace = () => {
           credit: 2
         }
         await setDoc(doc(firebaseDb, "users", userDetail?.primaryEmailAddress?.emailAddress ?? ''), {
-        ...data  
+          ...data
         })
         setUserDetail(data)
       }
@@ -48,7 +54,14 @@ const Workspace = () => {
   }
   return (
     <div>
-      Workspace
+      <Header />
+      {
+        location.pathname === '/workspace' &&
+        <div>
+          <PromptBox />
+          <MyProjects />
+        </div>
+      }
       <Outlet />
     </div>
   )
