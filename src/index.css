@@ -138,3 +138,15 @@ a:hover {
   }
 }
 
+.typing-header {
+  width: 33ch;
+  text-wrap: nowrap;
+  overflow: hidden;
+  animation: typing 4s steps(33) infinite;
+}
+
+@keyframes typing {
+  from {
+    width: 0ch;
+  }
+}

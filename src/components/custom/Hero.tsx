@@ -10,7 +10,7 @@ const Hero = () => {
 
     return (
         <div className='flex flex-col items-center justify-center mt-28 space-y-2'>
-            <h2 className='text-5xl font-bold'>Turn your Idea to a Fantastic <span className='text-primary'>Presentation</span> in One Click</h2>
+            <h2 className='typing-header text-5xl font-bold'>Turn <span className='text-primary'> Idea</span> to <span className='text-primary'>Presentation</span> in One Click</h2>
             <p className='text-gray-500 text-xl max-w-xl text-center'>Generate editable AI-powered PPTs. Save hours on design and focus on your story!</p>
             <div className='flex gap-5 mt-10'>
                 <Button variant={'outline'} size={'lg'}>Watch Video <Video /></Button>

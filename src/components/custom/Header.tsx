@@ -10,7 +10,12 @@ const Header = () => {
             <img src={logo} width={130} height={130} alt='logo' />
             {user ?
                 <div className='flex items-center gap-2'>
-                    <UserButton />
+                    <UserButton
+                        appearance={{
+                            elements: {
+                                userButtonAvatarBox: 'w-10 h-10'
+                            }
+                        }} />
                     <Link to='/workspace'>
                         <Button>Go to Workspace</Button>
                     </Link>
