@@ -13,8 +13,33 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { ArrowUpIcon } from "lucide-react"
+import { useUser } from "@clerk/clerk-react"
+import { firebaseDb } from "../../../config/FirebaseConfig"
+import { doc, setDoc } from "firebase/firestore"
+import { ArrowUpIcon, LoaderIcon } from "lucide-react"
+import { useState } from "react"
+import { v4 as uuidv4 } from 'uuid'
+import { useNavigate } from "react-router-dom"
 const PromptBox = () => {
+    const [userInput, setUserInput] = useState<string>('')
+    const [loading, setLoading] = useState<boolean>(false)
+    const [noOfSlides, setNoOfSlides] = useState<string>('4 to 6')
+    const { user } = useUser()
+    const navigate = useNavigate()
+    const CreateAndSaveProject = async () => {
+        const projectId = uuidv4()
+        setLoading(true)
+        await setDoc(doc(firebaseDb, 'projects', projectId), {
+            projectId: projectId,
+            userPrompt: userInput,
+            createdBy: user?.primaryEmailAddress?.emailAddress,
+            createdAt: Date.now(),
+            noOfSlides
+        })
+        setLoading(false)
+        navigate(`/workspace/project/${projectId}/outline`)
+    }
+
     return (
         <div className='flex w-full items-center justify-center mt-28'>
             <div className='flex flex-col items-center justify-center space-y-4'>
@@ -24,10 +49,14 @@ const PromptBox = () => {
                 <p className='text-xl text-gray-500'>Your design will be saved as new project</p>
 
                 <InputGroup>
-                    <InputGroupTextarea placeholder="what's in your mind?" className="min-h-36"/>
+                    <InputGroupTextarea
+                        placeholder="what's in your mind?"
+                        className="min-h-36"
+                        onChange={(e) => setUserInput(e.target.value)}
+                    />
                     <InputGroupAddon align={'block-end'}>
                         <InputGroupButton>
-                            <Select>
+                            <Select onValueChange={(value) => setNoOfSlides(value)}>
                                 <SelectTrigger className="w-[180px]">
                                     <SelectValue placeholder="Select No. of Slides" />
                                 </SelectTrigger>
@@ -42,11 +71,15 @@ const PromptBox = () => {
                             </Select>
                         </InputGroupButton>
                         <InputGroupButton
-                        className="rounded-full ml-auto"
-                        variant={'default'}
-                        size={'icon-sm'}
+                            className="rounded-full ml-auto"
+                            variant={'default'}
+                            size={'icon-sm'}
+                            onClick={() => CreateAndSaveProject()}
+                            disabled={!userInput || loading}
                         >
-                        <ArrowUpIcon />
+                            {
+                                loading ? <LoaderIcon className="animate-spin"/> : <ArrowUpIcon />
+                            }
                         </InputGroupButton>
                     </InputGroupAddon>
                 </InputGroup>

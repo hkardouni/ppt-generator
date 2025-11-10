@@ -25,7 +25,6 @@ const Workspace = () => {
       const docSnap = await getDoc(docRef)
 
       if (docSnap.exists()) {
-        console.log(docSnap.data())
         setUserDetail(docSnap.data())
       } else {
         const data = {
