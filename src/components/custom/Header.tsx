@@ -1,4 +1,4 @@
-import logo from '@/assets/logo.png'
+import logo from '/assets/logo.png'
 import { Button } from '../ui/button'
 import { SignInButton, UserButton, useUser } from '@clerk/clerk-react'
 import { Link, useLocation } from 'react-router-dom'
