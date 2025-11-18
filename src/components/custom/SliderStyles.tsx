@@ -16,7 +16,7 @@ const SliderStyles = () => {
 							<img src={design.bannerImage} alt={design.styleName}
 								width={300}
 								height={300}
-								className={`w-full h-[150px] rounded-2xl object-cover hover:scale-110 transition-all ${selectedStyle === design.styleName ? 'p-1 rounded-2xl border-2 border-black' : ''}`}
+								className={`w-full h-[150px] rounded-2xl object-cover hover:scale-110 transition-all ${selectedStyle === design.styleName ? 'p-2 rounded-2xl border-2 border-primary' : ''}`}
 							/>
 							<h1 className='font-semibold text-center mt-1'>{design.styleName}</h1>
 						</div>

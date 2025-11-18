@@ -1,23 +1,77 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import SliderStyles from "@/components/custom/SliderStyles"
-import { firebaseDb } from "../../../../config/FirebaseConfig"
+import { firebaseDb, GeminiModel } from "../../../../config/FirebaseConfig"
 import { doc, getDoc } from "firebase/firestore"
 import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { data, useParams } from "react-router-dom"
+import OutlineSection from "@/components/custom/OutlineSection"
 
+
+const OUTLINE_PROMPT = `Generate a PowerPoint slide outline for the topic {userInput}".
+Create {noOfSlides} slides in total.
+Each slide should include a topic name a 2-line descriptive outline that clearly explains what content the will cover.
+Include the following structure:
+The first slide should be a Welcome screen.
+The second slide should be an Agenda screen.
+The final slide should be a Thank you screen.
+Return the response only in JSON format, following this schema:
+[
+{
+"slideNo": "",
+"slidePoint": "",
+"outline": ""
+}
+]`
+
+const DUMMY_OUTLINE = [
+  {
+    "slideNo": "1",
+    "slidePoint": "Welcome to 'sfgsdfgsdfg'",
+    "outline": "Greetings and a warm welcome to our presentation on 'sfgsdfgsdfg'.\nWe'll explore the essence and implications of this fascinating topic today."
+  },
+  {
+    "slideNo": "2",
+    "slidePoint": "Today's Journey: Agenda",
+    "outline": "We'll start by defining 'sfgsdfgsdfg' and its core concepts.\nThen, we'll delve into its applications and future outlook."
+  },
+  {
+    "slideNo": "3",
+    "slidePoint": "Demystifying 'sfgsdfgsdfg'",
+    "outline": "This section will provide a clear definition and historical context of 'sfgsdfgsdfg'.\nWe'll break down its fundamental components and how it operates."
+  },
+  {
+    "slideNo": "4",
+    "slidePoint": "Applications and Future of 'sfgsdfgsdfg'",
+    "outline": "Discover real-world examples and potential use cases where 'sfgsdfgsdfg' is impactful.\nWe'll also look at emerging trends and what the future holds for this domain."
+  },
+  {
+    "slideNo": "5",
+    "slidePoint": "Q&A and Thank You",
+    "outline": "We invite you to ask any questions you may have about 'sfgsdfgsdfg'.\nThank you for your valuable time and participation today."
+  }
+]
+export type Outline = {
+  slideNo: string,
+  slidePoint: string,
+  outline: string
+}
 
 type Project = {
   userPrompt?: string,
   projectId?: string,
   noOfSlides?: string,
   createdBy?: string,
-  createdAt?: string
+  createdAt?: string,
+  outline?: Outline[]
 }
 
 const Outline = () => {
 
   const { projectId } = useParams()
   const [projecctDetail, setProjectDetail] = useState<Project>()
+  const [loading, setLoading] = useState(false)
+  const [outline, setOutline] = useState<Outline[]>(DUMMY_OUTLINE)
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
@@ -33,7 +87,43 @@ const Outline = () => {
     }
 
     // console.log(docSnap.data())
+
     setProjectDetail(docSnap.data())
+
+    if (!docSnap.data()?.outline) {
+      // GenerateOutline(docSnap.data())
+    }
+  }
+
+  const GenerateOutline = async (projectData?: Project) => {
+    setLoading(true)
+    // Provide a prompt that contains text
+    const prompt = OUTLINE_PROMPT
+      .replace('{userInput}', projectData?.userPrompt || '')
+      .replace('{noOfSlides}', projectData?.noOfSlides || '4 to 6')
+
+    // To generate text output, call generateContent with the text input
+    const result = await GeminiModel.generateContent(prompt);
+
+    const response = result.response;
+    const text = response.text();
+
+    console.log(text)
+    const rawJson = text.replace('```json', '')
+      .replace('```', '')
+
+    const jsonData = JSON.parse(rawJson)
+    setOutline(jsonData)
+    setLoading(false)
+
+  }
+
+  const handleUpdateOutline = (index: string, value: Outline) => {
+    setOutline((prev) => 
+      prev.map((item) => 
+        item.slideNo === index ? { ...item, ...value } : item
+      )
+    )
   }
 
   return (
@@ -41,6 +131,14 @@ const Outline = () => {
       <div className="max-w-3xl w-full">
         <h2 className="font-bold text-2xl">Setting and Slider Outline</h2>
         <SliderStyles />
+        <OutlineSection
+          loading={loading}
+          outline={outline ?? []}
+          handleUpdateOutline={
+            (index: string, value: Outline) =>
+              handleUpdateOutline(index, value)
+          }
+        />
       </div>
     </div>
   )
