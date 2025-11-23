@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import designStyles from '../../data/StyleDesigns.json'
+import type { Tslide } from '@/data/Types/TSlides'
 
-const SliderStyles = () => {
+const SliderStyles = ({ selectStyle }: Tslide) => {
 	const [selectedStyle, setSelectedStyle] = useState<string>()
 
 	return (
@@ -12,7 +13,10 @@ const SliderStyles = () => {
 					designStyles.map((design, index) => (
 						<div key={index}
 							className={`cursor-pointer`}
-							onClick={() => setSelectedStyle(design.styleName)}>
+							onClick={() => {
+								setSelectedStyle(design.styleName)
+								selectStyle(design)
+							}}>
 							<img src={design.bannerImage} alt={design.styleName}
 								width={300}
 								height={300}

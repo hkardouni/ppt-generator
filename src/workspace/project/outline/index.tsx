@@ -2,10 +2,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import SliderStyles from "@/components/custom/SliderStyles"
 import { firebaseDb, GeminiModel } from "../../../../config/FirebaseConfig"
-import { doc, getDoc } from "firebase/firestore"
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore"
 import { useEffect, useState } from "react"
 import { data, useParams } from "react-router-dom"
 import OutlineSection from "@/components/custom/OutlineSection"
+import type { TDesignStyle, Tslide } from "@/data/Types/TSlides"
+import { Button } from "@/components/ui/button"
+import { ArrowRight, Loader2Icon } from "lucide-react"
 
 
 const OUTLINE_PROMPT = `Generate a PowerPoint slide outline for the topic {userInput}".
@@ -57,13 +60,15 @@ export type Outline = {
   outline: string
 }
 
-type Project = {
+export type Project = {
   userPrompt?: string,
   projectId?: string,
   noOfSlides?: string,
   createdBy?: string,
   createdAt?: string,
-  outline?: Outline[]
+  outline?: Outline[],
+  slides?: Tslide[],
+  designStyles?: TDesignStyle
 }
 
 const Outline = () => {
@@ -71,7 +76,9 @@ const Outline = () => {
   const { projectId } = useParams()
   const [projecctDetail, setProjectDetail] = useState<Project>()
   const [loading, setLoading] = useState(false)
+  const [updateDbLoading, setUpdateDbLoading] = useState(false)
   const [outline, setOutline] = useState<Outline[]>(DUMMY_OUTLINE)
+  const [selectedStyle, setSelectedStyle] = useState<TDesignStyle>()
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
@@ -119,18 +126,32 @@ const Outline = () => {
   }
 
   const handleUpdateOutline = (index: string, value: Outline) => {
-    setOutline((prev) => 
-      prev.map((item) => 
+    setOutline((prev) =>
+      prev.map((item) =>
         item.slideNo === index ? { ...item, ...value } : item
       )
     )
+  }
+
+  const onGenerateSlider = async () => {
+    setUpdateDbLoading(true)
+    //update db
+    await setDoc(doc(firebaseDb, 'projects', projectId ?? ''), {
+      designStyle: selectedStyle,
+      outline: outline
+    }, {
+      merge: true
+    })
+    setUpdateDbLoading(false)
+
+    // navigate to slider editor
   }
 
   return (
     <div className="flex justify-center mt-20">
       <div className="max-w-3xl w-full">
         <h2 className="font-bold text-2xl">Setting and Slider Outline</h2>
-        <SliderStyles />
+        <SliderStyles selectStyle={(value: TDesignStyle) => setSelectedStyle(value)} />
         <OutlineSection
           loading={loading}
           outline={outline ?? []}
@@ -140,6 +161,16 @@ const Outline = () => {
           }
         />
       </div>
+      <Button size={'lg'}
+      className='fixed bottom-6 transform left-1/2 -translate-x-1/2'
+      onClick={onGenerateSlider}
+      disabled={updateDbLoading || loading}
+      >
+        {
+          updateDbLoading && <Loader2Icon className="animate-spin"/>
+        }
+        Generate Slides <ArrowRight />
+      </Button>
     </div>
   )
 }

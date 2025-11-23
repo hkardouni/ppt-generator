@@ -1,7 +1,7 @@
 import type { Outline } from '@/workspace/project/outline'
 import { Skeleton } from '../ui/skeleton'
 import { Button } from '../ui/button'
-import { ArrowRight, Edit } from 'lucide-react'
+import { Edit } from 'lucide-react'
 import EditOutlineDialog from './EditOutlineDialog'
 
 type props = {
@@ -17,7 +17,7 @@ const OutlineSection = ({ loading, outline, handleUpdateOutline }: props) => {
       {loading &&
         <div>
           {
-            [1, 2, 3, 4].map((item, index) => (
+            [1, 2, 3, 4].map((index) => (
               <Skeleton key={index} className='h-[60px] w-full rounded-2xl' />
             ))
           }
@@ -44,9 +44,6 @@ const OutlineSection = ({ loading, outline, handleUpdateOutline }: props) => {
           ))
         }
       </div>
-      <Button size={'lg'} className='fixed bottom-6 transform left-1/2 -translate-x-1/2'>
-        Generate Slides <ArrowRight />
-      </Button>
     </div>
   )
 }
