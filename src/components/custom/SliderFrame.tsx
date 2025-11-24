@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { TColors } from "@/data/Types/TSlides"
 import { firebaseDb, GeminiAiModel } from "./../../../config/FirebaseConfig"
 import { doc, setDoc } from "firebase/firestore"
@@ -7,51 +9,49 @@ import { useParams } from "react-router-dom"
 type TProps = {
     slide: { code: string },
     colors?: TColors,
-    setUpdateSlider: (code: string | undefined) => void
+    setUpdateSlider: any
 }
 
 const HTML_DEFAULT = `<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AI Presentation Builder</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {colorCodes},
-                    backgroundImage: {
-                        gradient: 'linear-gradienr(90deg, #6366F1 0%, #EC4899 100%)',
-                    },
-                },
-            },
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Presentation Builder</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {colorCodes},
+          backgroundImage: {
+            gradient: 'linear-gradient(90deg, #6366F1 0%, #10B981 100%)'
+          }
         }
-    </script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet"/>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
-    <link rel="stylesheet" href="https://cdjs.cloudflare.com/ajax/libs/font-awsome/6.5.2/css/all.min.css"
-    integrity="sha512-HtsOMqg+p0Bk3hPOB0j6K+qkgY1kQ1D2SmVwl/7GR5gkks5Ykuf9Mv3XW4sQmPZf3rMZz3ayPCz8N8z6+X3s0g=="
-    crossorigin="anonymous" referrerpolicy="no-referrer" />
-    />
-    
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet"/>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+      }
+    }
+  </script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.11.2/lottie.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css"/>
-    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
-    <script src="https://unpkg.com/@popperjs/core@2"></script>
-    <script src="https://unpkg.com/tippy.js@6"></script>
-    
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.11.2/lottie.min.js"></script>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+
+  <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
+  <script src="https://unpkg.com/@popperjs/core@2"></script>
+  <script src="https://unpkg.com/tippy.js@6"></script>
 </head>
 {code}
 </html>`
@@ -70,13 +70,13 @@ const SliderFrame = ({ slide, colors, setUpdateSlider }: TProps) => {
     useEffect(() => {
         if (!iframeRef.current) return
         const iframe = iframeRef.current;
-        const doc = iframeRef.current.contentDocument;
+        const iframeDoc = iframeRef.current.contentDocument;
 
-        if (!doc) return
+        if (!iframeDoc) return
 
-        doc.open();
-        doc.write(FINAL_CODE);
-        doc.close();
+        iframeDoc.open();
+        iframeDoc.write(FINAL_CODE);
+        iframeDoc.close();
 
         let hoverEL: HTMLElement | null = null;
         let selectedEL: HTMLElement | null = null;
@@ -147,18 +147,18 @@ const SliderFrame = ({ slide, colors, setUpdateSlider }: TProps) => {
             }
         }
 
-        doc.addEventListener("DOMContentLoaded", () => {
-            doc.body?.addEventListener("mouseover", handleMouseOver);
-            doc.body?.addEventListener("mouseout", handleMouseOut);
-            doc.body?.addEventListener("click", handleClick);
-            doc.body?.addEventListener("keydown", handleKeyDown);
+        iframeDoc.addEventListener("DOMContentLoaded", () => {
+            iframeDoc.body?.addEventListener("mouseover", handleMouseOver);
+            iframeDoc.body?.addEventListener("mouseout", handleMouseOut);
+            iframeDoc.body?.addEventListener("click", handleClick);
+            iframeDoc.body?.addEventListener("keydown", handleKeyDown);
         })
 
         return () => {
-            doc.body?.removeEventListener("mouseover", handleMouseOver);
-            doc.body?.removeEventListener("mouseout", handleMouseOut);
-            doc.body?.removeEventListener("click", handleClick);
-            doc.body?.removeEventListener("keydown", handleKeyDown);
+            iframeDoc.body?.removeEventListener("mouseover", handleMouseOver);
+            iframeDoc.body?.removeEventListener("mouseout", handleMouseOut);
+            iframeDoc.body?.removeEventListener("click", handleClick);
+            iframeDoc.body?.removeEventListener("keydown", handleKeyDown);
         }
     }, [slide?.code])
 
@@ -170,14 +170,20 @@ const SliderFrame = ({ slide, colors, setUpdateSlider }: TProps) => {
 
         const oldHTML = selectedEl.outerHTML;
         const prompt = `
+        You are an HTML generator. You ONLY return valid HTML. 
+        NEVER include the user instructions or explanations in the output.
+        Do NOT wrap the response in markdown (\`\`\`) code blocks.
+        Do NOT include any text other than pure HTML tags.
+        Replace only the ELEMENT itself (not the whole page).
         Regenerate or rewrite the following HTML code based on the user instruction.
-        If user askked to change the image/regenerate the image then make sure to use ImageKit:
+        If user asked to change the image/regenerate the image then make sure to use ImageKit:
         'https://ik.imagekit.io/ikmedia/ik-genimg-prompt-{imagePropmt}/{altImageName}.jpg'
         Replace {imagePrompt} with relevant image prompt and altImageName with a random image name.
         if user want to crop image or remove background or scale image or optimize image then add imagekit ai transformation
         by providing ?tr=fo-auto,<other transformation> etc.
         "User Instruction is: ${userAiPropmt}"
         HTML code: ${oldHTML}
+        Return ONLY the updated HTML element.
         `
 
         try {
@@ -225,13 +231,13 @@ const SliderFrame = ({ slide, colors, setUpdateSlider }: TProps) => {
             <iframe
                 ref={iframeRef}
                 className="w-[800px] h-[500px] border-0 rounded-2xl"
-                sandbox="allow-script allow-same-origin allow modals allow-forms allow-popups"
+                sandbox="allow-scripts allow-same-origin allow-modals allow-forms allow-popups"
             />
-            <FloatingActionTool poition={cardPosition}
+            {/* <FloatingActionTool poition={cardPosition}
                 onClose={() => setCardPosition(null)}
                 loading={loading}
                 handleAiChange={(value: string) => handleAiSectionChange(value)}
-            />
+            /> */}
         </div>
     )
 }
